@@ -36,4 +36,7 @@ public interface NoteDao {
     @Delete
     void delete(Note note);
 
+    @Query("DELETE FROM Note")
+    void clear();
+
 }

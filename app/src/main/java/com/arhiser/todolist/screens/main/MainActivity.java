@@ -1,12 +1,14 @@
 package com.arhiser.todolist.screens.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import com.arhiser.todolist.App;
 import com.arhiser.todolist.R;
 import com.arhiser.todolist.model.Note;
+import com.arhiser.todolist.model.Room;
 import com.arhiser.todolist.screens.details.NoteDetailsActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -17,14 +19,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
+    private MainViewModel mainViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +50,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        MainViewModel mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
         mainViewModel.getNoteLiveData().observe(this, new Observer<List<Note>>() {
             @Override
             public void onChanged(List<Note> notes) {
                 adapter.setItems(notes);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (App.getInstance().getRoomDao().getAny().size() == 0){
+            Intent launchIntent = new Intent(MainActivity.this, DatePicking.class);
+            startActivity(launchIntent);
+        }
     }
 }
